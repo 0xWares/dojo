@@ -1,3 +1,4 @@
+import 'package:dojo/edit_task_form.dart';
 import 'package:dojo/task.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,11 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
           IconButton(
             icon: Icon(Icons.edit),
             onPressed: () {
-              // Handle edit action
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => EditTaskForm(widget.task),
+                ),
+              );
             },
           ),
           IconButton(
