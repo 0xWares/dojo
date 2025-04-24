@@ -58,4 +58,29 @@ class DbHelper {
     List<Map<String, dynamic>> myData = await db.query(tableName);
     return myData;
   }
+
+  Future<bool> updateTask({
+    required String mTitle,
+    required String mDescription,
+
+    required int mSerialNumber,
+  }) async {
+    var db = await getDB();
+    var rowsEffected = await db.update(tableName, {
+      noteTitle: mTitle,
+      noteDescription: mDescription,
+    }, where: '$serialNumber = $mSerialNumber');
+    return rowsEffected > 0;
+  }
+
+  Future<bool> deleteTask({required int serialNumber}) async {
+    var db = await getDB();
+    var rowsEffected = await db.delete(
+      tableName,
+      where:
+          '${DbHelper.serialNumber} = ?', // Use the column name constant here
+      whereArgs: [serialNumber],
+    );
+    return rowsEffected > 0;
+  }
 }

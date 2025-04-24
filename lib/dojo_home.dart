@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dojo/database/local/db_helper.dart';
 import 'package:dojo/task_detail_page.dart';
+import 'package:iconly/iconly.dart';
 
 class DojoHome extends StatefulWidget {
   const DojoHome({super.key});
@@ -12,6 +13,8 @@ class DojoHome extends StatefulWidget {
 class _DojoHomeState extends State<DojoHome> {
   late Future<List<Map<String, dynamic>>> _tasksFuture;
   final DbHelper _dbHelper = DbHelper.getInstance;
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -26,74 +29,10 @@ class _DojoHomeState extends State<DojoHome> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Dojo Home')),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _tasksFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text(
-                'No tasks available',
-                style: TextStyle(fontSize: 20, color: Colors.grey),
-              ),
-            );
-          }
-
-          return ListView.separated(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final task = snapshot.data![index];
-              return ListTile(
-                onTap: () => _navigateToTaskDetail(context, task),
-                title: Text(
-                  task[DbHelper.noteTitle],
-                  style: TextStyle(
-                    decoration:
-                        task[DbHelper.noteStatus] == 1
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
-                  ),
-                ),
-                subtitle: Text(task[DbHelper.noteDescription]),
-                trailing: Checkbox(
-                  value: task[DbHelper.noteStatus] == 1,
-                  onChanged: (value) => _updateTaskStatus(task, value),
-                ),
-              );
-            },
-            separatorBuilder: (context, index) => const Divider(),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddTaskBottomSheet(context),
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  void _navigateToTaskDetail(BuildContext context, Map<String, dynamic> task) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => TaskDetailPage(
-              title: task[DbHelper.noteTitle],
-              description: task[DbHelper.noteDescription],
-              status: task[DbHelper.noteStatus] == 1,
-            ),
-      ),
-    );
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
   }
 
   Future<void> _updateTaskStatus(Map<String, dynamic> task, bool? value) async {
@@ -110,9 +49,15 @@ class _DojoHomeState extends State<DojoHome> {
     });
   }
 
-  void _showAddTaskBottomSheet(BuildContext context) {
-    final titleController = TextEditingController();
-    final descriptionController = TextEditingController();
+  void _showAddTaskBottomSheet(
+    BuildContext context,
+    bool isEdit, {
+    int sl_no = 0,
+  }) {
+    if (!isEdit) {
+      titleController.clear();
+      descriptionController.clear();
+    }
 
     showModalBottomSheet(
       context: context,
@@ -121,10 +66,18 @@ class _DojoHomeState extends State<DojoHome> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              Text(
+                isEdit ? 'Edit Task' : 'Add Task',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
               TextField(
                 controller: titleController,
                 decoration: const InputDecoration(
-                  labelText: 'Title',
+                  labelText: "Title",
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -150,16 +103,31 @@ class _DojoHomeState extends State<DojoHome> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (titleController.text.isNotEmpty) {
+                        if (titleController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Title cannot be empty'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (isEdit) {
+                          await _dbHelper.updateTask(
+                            mTitle: titleController.text,
+                            mDescription: descriptionController.text,
+                            mSerialNumber: sl_no,
+                          );
+                        } else {
                           await _dbHelper.addNote(
                             title: titleController.text,
                             description: descriptionController.text,
                           );
-                          _refreshTasks();
-                          Navigator.pop(context);
                         }
+                        _refreshTasks();
+                        Navigator.pop(context);
                       },
-                      child: const Text('Save'),
+                      child: Text(isEdit ? 'Update' : 'Add'),
                     ),
                   ),
                 ],
@@ -168,6 +136,107 @@ class _DojoHomeState extends State<DojoHome> {
           ),
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Dojo Home')),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _tasksFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text(
+                'No tasks available',
+                style: TextStyle(fontSize: 20, color: Colors.grey),
+              ),
+            );
+          }
+
+          return ListView.separated(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final task = snapshot.data![index];
+              return ListTile(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => TaskDetailPage(
+                            title: task[DbHelper.noteTitle],
+                            description: task[DbHelper.noteDescription],
+                            status: task[DbHelper.noteStatus] == 1,
+                          ),
+                    ),
+                  );
+                },
+                title: Text(
+                  task[DbHelper.noteTitle],
+                  style: TextStyle(
+                    decoration:
+                        task[DbHelper.noteStatus] == 1
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                  ),
+                ),
+                subtitle: Text(task[DbHelper.noteDescription]),
+                trailing: SizedBox(
+                  width: 140,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Checkbox(
+                        value: task[DbHelper.noteStatus] == 1,
+                        onChanged: (value) => _updateTaskStatus(task, value),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          titleController.text = task[DbHelper.noteTitle];
+                          descriptionController.text =
+                              task[DbHelper.noteDescription];
+                          _showAddTaskBottomSheet(
+                            context,
+                            true,
+                            sl_no: task[DbHelper.serialNumber],
+                          );
+                        },
+                        icon: const Icon(IconlyBroken.edit, color: Colors.blue),
+                      ),
+                      IconButton(
+                        onPressed: () async {
+                          await _dbHelper.deleteTask(
+                            serialNumber: task[DbHelper.serialNumber],
+                          );
+                          _refreshTasks();
+                        },
+                        icon: const Icon(
+                          IconlyBroken.delete,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+            separatorBuilder: (context, index) => const Divider(),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showAddTaskBottomSheet(context, false);
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
