@@ -77,8 +77,7 @@ class DbHelper {
     var db = await getDB();
     var rowsEffected = await db.delete(
       tableName,
-      where:
-          '${DbHelper.serialNumber} = ?', // Use the column name constant here
+      where: '${DbHelper.serialNumber} = ?',
       whereArgs: [serialNumber],
     );
     return rowsEffected > 0;

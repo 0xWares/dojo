@@ -11,6 +11,7 @@ class DojoHome extends StatefulWidget {
 }
 
 class _DojoHomeState extends State<DojoHome> {
+  late bool warn;
   late Future<List<Map<String, dynamic>>> _tasksFuture;
   final DbHelper _dbHelper = DbHelper.getInstance;
   final titleController = TextEditingController();
@@ -79,6 +80,12 @@ class _DojoHomeState extends State<DojoHome> {
                 decoration: const InputDecoration(
                   labelText: "Title",
                   border: OutlineInputBorder(),
+                ),
+              ),
+              Visibility(
+                child: Text(
+                  "The title can not be empty!",
+                  style: TextStyle(color: Colors.redAccent),
                 ),
               ),
               const SizedBox(height: 16),
@@ -186,11 +193,12 @@ class _DojoHomeState extends State<DojoHome> {
                             : TextDecoration.none,
                   ),
                 ),
+
                 subtitle: Text(task[DbHelper.noteDescription]),
                 trailing: SizedBox(
-                  width: 140,
+                  width: 160,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Checkbox(
@@ -209,6 +217,8 @@ class _DojoHomeState extends State<DojoHome> {
                           );
                         },
                         icon: const Icon(IconlyBroken.edit, color: Colors.blue),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
                       IconButton(
                         onPressed: () async {
@@ -221,6 +231,8 @@ class _DojoHomeState extends State<DojoHome> {
                           IconlyBroken.delete,
                           color: Colors.redAccent,
                         ),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
                     ],
                   ),
