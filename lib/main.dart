@@ -1,4 +1,5 @@
 import 'package:dojo/dojo_home.dart';
+import 'package:dojo/landing_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,11 +13,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const DojoHome(),
+      home: LandingPage(),
     );
   }
 }
