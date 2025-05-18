@@ -12,19 +12,19 @@ Dojo is a versatile Flutter app designed to streamline your productivity by comb
 (Future Plans: AI-powered suggestions, habit tracking, Pomodoro timer, and collaboration features!)
 
 
-##🚀 Getting Started
-##Prerequisites
+## 🚀 Getting Started
+## Prerequisites
 --> Flutter SDK (latest stable version)
 
 --> Firebase
 
-Installation
+## Installation
 bash
 git clone https://github.com/yourusername/dojo.git
 cd dojo
 flutter pub get
 flutter run
-🛠️ Tech Stack
+## 🛠️ Tech Stack
 Frontend: Flutter (Cross-platform)
 
 State Management: Provider
@@ -35,7 +35,7 @@ Authentication: Firebase Auth
 
 Local Storage: SQLite / SharedPreferences
 
-🤝 Contributing
+## 🤝 Contributing
 Want to improve Dojo? Contributions are welcome!
 
 Fork the repo
@@ -48,16 +48,16 @@ Push to branch (git push origin feature/awesome-feature)
 
 Open a Pull Request
 
-##📜 License
+## 📜 License
 This project is open source
 
-##💡 Why "Dojo"?
+## 💡 Why "Dojo"?
 A dojo is a space for learning and growth—just like this app! Whether you're mastering productivity or just organizing daily chaos, Dojo is your digital training ground.
 
-##Ready to get organized? ⚡ Download Dojo Now (Link coming soon!)
+## Ready to get organized? ⚡ Download Dojo Now (Link coming soon!)
 
 
-🐛 Report Issues: GitHub Issues
+## 🐛 Report Issues: GitHub Issues
 
 Made with ❤️ & Flutter by Md. Abdul Wares (0xWares)
 Let’s build productivity, one task at a time! 🚀
