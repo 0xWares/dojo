@@ -1,7 +1,7 @@
-#Dojo - Your All-in-One Productivity Hub 📝✅🔥
+# Dojo - Your All-in-One Productivity Hub 📝✅🔥
 Dojo is a versatile Flutter app designed to streamline your productivity by combining notes, tasks, planning, and goal tracking in one place. Whether you're a student, professional, or just someone who loves staying organized, Dojo helps you manage your life efficiently.
 
-##✨ Key Features
+## ✨ Key Features
 ✅ Smart Notes – Write, format, and categorize notes with ease.
 ✅ Task Manager – Create to-do lists with deadlines & reminders.
 ✅ Goal Tracking – Set and monitor personal/professional goals.
