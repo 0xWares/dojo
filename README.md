@@ -21,7 +21,7 @@ Dojo is a versatile Flutter app designed to streamline your productivity by comb
 ## Installation
 
 
-```bash git clone https://github.com/yourusername/dojo.git ``` 
+<pre> ```bash git clone https://github.com/yourusername/dojo.git ``` </pre> 
 
 cd dojo
 flutter pub get
